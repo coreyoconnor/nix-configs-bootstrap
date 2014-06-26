@@ -16,7 +16,7 @@ config_text_no_admin = "{config, pkgs, ...}:\n\
 
 config_text = "{config, pkgs, ...}:\n\
 \{\n\
-\  require = [ ./config-at-bootstrap.nix ];\n\
+\  require = [ ./config-at-bootstrap.nix ../../standard-nixpath.nix ];\n\
 \}\n"
 
 nix_configs = ( "https://github.com/coreyoconnor/nix_configs.git"
@@ -24,7 +24,7 @@ nix_configs = ( "https://github.com/coreyoconnor/nix_configs.git"
               )
 
 main = shelly $ verbosely $ do
-    host <- run "uname" ["-n"]
+    host <- T.strip <$> run "uname" ["-n"]
     let bootstrap_config_dir = fromText $ "/home/admin/tmp/computers/" <> host
     rm_rf bootstrap_config_dir
     mkdir_p bootstrap_config_dir
@@ -45,6 +45,7 @@ main = shelly $ verbosely $ do
                                              <> "/computers/" <> host <> "/configuration.nix"
                          <> ":services=/etc/nixos/services"
         setenv "NIX_PATH" new_NIX_PATH
-        echo new_NIX_PATH
+        echo $ "reconfiguring using NIX_PATH " <> new_NIX_PATH
+        run_ "sudo" ["nixos-rebuild", "switch"]
     return ()
 
