@@ -1,0 +1,3 @@
+[submodule "nix_configs"]
+	path = nix_configs
+	url = git@github.com:coreyoconnor/nix_configs.git
